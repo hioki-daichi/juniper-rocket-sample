@@ -13,3 +13,6 @@ juniper = "*"
 juniper_rocket = "*"
 rocket = "*"
 rocket_cors = "*"
+
+[dev-dependencies]
+cargo-husky = { version = "*", default-features = false, features = ["user-hooks"] }
