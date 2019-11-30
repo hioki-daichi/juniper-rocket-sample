@@ -11,3 +11,8 @@ pub fn graphql(
 ) -> GraphQLResponse {
     request.execute(&schema, &context)
 }
+
+#[get("/")]
+pub fn graphiql() -> rocket::response::content::Html<String> {
+    juniper_rocket::graphiql_source("/graphql")
+}
