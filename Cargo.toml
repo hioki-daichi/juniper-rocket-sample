@@ -9,3 +9,6 @@ edition = "2018"
 [dependencies]
 chrono = "*"
 diesel = { version = "*", features = ["postgres", "chrono", "r2d2"] }
+juniper = "*"
+juniper_rocket = "*"
+rocket = "*"

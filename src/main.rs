@@ -1,12 +1,21 @@
+#![feature(proc_macro_hygiene)]
+#![feature(decl_macro)]
+
+use crate::graphql::schema::{Mutation, Query, Schema};
 use diesel::r2d2::{ConnectionManager, Pool};
 use diesel::PgConnection;
 use std::env;
 
+mod graphql;
 mod schema;
 mod video;
 
 #[macro_use]
 extern crate diesel;
+#[macro_use]
+extern crate rocket;
+#[macro_use]
+extern crate juniper;
 
 pub struct Context {
     pool: Pool<ConnectionManager<PgConnection>>,
@@ -19,5 +28,9 @@ fn main() {
         .expect("failed to build connection pool");
     let context = Context { pool };
 
-    println!("{:?}", video::model::Video::all(&context));
+    rocket::ignite()
+        .manage(context)
+        .manage(Schema::new(Query, Mutation))
+        .mount("/", routes![graphql::handler::graphql])
+        .launch();
 }
