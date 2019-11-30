@@ -32,3 +32,13 @@ diesel database reset
 psql $DATABASE_URL --command "INSERT INTO videos VALUES (1, 'testdata/sample1.mp4'), (2, 'testdata/sample2.mp4'), (3, 'testdata/sample3.mp4'), (4, 'testdata/sample4.mp4'), (5, 'testdata/sample5.mp4'), (6, 'testdata/sample6.mp4'), (7, 'testdata/sample7.mp4')"
 psql $DATABASE_URL --command "SELECT * FROM videos;"
 ''']
+
+[tasks.s3-reset]
+script = ['''
+#!/bin/bash
+
+aws --endpoint-url $AWS_ENDPOINT_URL s3 rm s3://videos --recursive
+aws --endpoint-url $AWS_ENDPOINT_URL s3 rb s3://videos
+aws --endpoint-url $AWS_ENDPOINT_URL s3 mb s3://videos
+aws --endpoint-url $AWS_ENDPOINT_URL s3 sync testdata/ s3://videos
+''']
