@@ -35,5 +35,12 @@ fn main() {
             "/",
             routes![graphql::handler::graphiql, graphql::handler::graphql],
         )
+        .attach(
+            rocket_cors::CorsOptions {
+                ..Default::default()
+            }
+            .to_cors()
+            .expect("error while building CORS"),
+        )
         .launch();
 }

@@ -12,3 +12,4 @@ diesel = { version = "*", features = ["postgres", "chrono", "r2d2"] }
 juniper = "*"
 juniper_rocket = "*"
 rocket = "*"
+rocket_cors = "*"
