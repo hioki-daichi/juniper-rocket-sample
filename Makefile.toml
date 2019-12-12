@@ -27,11 +27,15 @@ script = ['''
 diesel migration run
 ''']
 
+[tasks.setup]
+dependencies = [
+	"reset-s3-testdata",
+	"reset-db"
+]
+
 [tasks.reset-db]
 script = ['''
 #!/bin/bash
-
-docker-compose up &
 
 sleep 10
 
@@ -42,10 +46,6 @@ for filename in $(aws --profile ${PROFILE} --endpoint-url ${AWS_ENDPOINT_URL} s3
 done
 
 psql ${DATABASE_URL} --command "SELECT * FROM videos;"
-
-docker-compose stop
-
-forego start
 ''']
 
 [tasks.reset-s3-testdata]
