@@ -1,3 +1,6 @@
+[env]
+PROFILE = "juniper-rocket-sample"
+
 [tasks.clean]
 command = "cargo"
 args = ["clean"]
@@ -24,7 +27,7 @@ script = ['''
 diesel migration run
 ''']
 
-[tasks.db-reset]
+[tasks.reset-db]
 script = ['''
 #!/bin/bash
 
@@ -34,24 +37,32 @@ sleep 10
 
 diesel database reset
 
-for filename in $(aws --profile minio --endpoint-url $AWS_ENDPOINT_URL s3 ls s3://$BUCKET_NAME | tr -s ' ' | cut -d' ' -f4); do
-	src="$BUCKET_NAME/$filename"
-	psql $DATABASE_URL --command "INSERT INTO videos (src) VALUES ('$src')"
+for filename in $(aws --profile ${PROFILE} --endpoint-url ${AWS_ENDPOINT_URL} s3 ls s3://${BUCKET_NAME} | tr -s ' ' | cut -d' ' -f4); do
+	psql ${DATABASE_URL} --command "INSERT INTO videos (src) VALUES ('${filename}')"
 done
 
-psql $DATABASE_URL --command "SELECT * FROM videos;"
+psql ${DATABASE_URL} --command "SELECT * FROM videos;"
 
 docker-compose stop
 
 forego start
 ''']
 
-[tasks.s3-reset]
+[tasks.reset-s3-testdata]
+dependencies = ["configure-aws-credentials"]
 script = ['''
 #!/bin/bash
 
-aws --endpoint-url $AWS_ENDPOINT_URL s3 rm s3://$BUCKET_NAME --recursive
-aws --endpoint-url $AWS_ENDPOINT_URL s3 rb s3://$BUCKET_NAME
-aws --endpoint-url $AWS_ENDPOINT_URL s3 mb s3://$BUCKET_NAME
-aws --endpoint-url $AWS_ENDPOINT_URL s3 sync testdata/ s3://$BUCKET_NAME
+aws --profile ${PROFILE} --endpoint-url ${AWS_ENDPOINT_URL} s3 rm s3://${BUCKET_NAME} --recursive
+aws --profile ${PROFILE} --endpoint-url ${AWS_ENDPOINT_URL} s3 rb s3://${BUCKET_NAME}
+aws --profile ${PROFILE} --endpoint-url ${AWS_ENDPOINT_URL} s3 mb s3://${BUCKET_NAME}
+aws --profile ${PROFILE} --endpoint-url ${AWS_ENDPOINT_URL} s3 sync testdata/ s3://${BUCKET_NAME}
+''']
+
+[tasks.configure-aws-credentials]
+script = ['''
+#!/bin/bash
+
+aws configure --profile ${PROFILE} set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+aws configure --profile ${PROFILE} set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
 ''']
