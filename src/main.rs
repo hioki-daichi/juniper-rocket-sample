@@ -8,6 +8,7 @@ use std::env;
 
 mod graphql;
 mod schema;
+mod util;
 mod video;
 
 #[macro_use]
