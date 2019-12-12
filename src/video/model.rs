@@ -3,7 +3,7 @@ use crate::video::entity as E;
 use crate::Context;
 use diesel::prelude::*;
 
-#[derive(Debug, GraphQLObject)]
+#[derive(Debug)]
 pub struct Video {
     pub src: String,
 }
