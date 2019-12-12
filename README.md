@@ -17,7 +17,7 @@ juniper-rocket-sample is a sample app using `juniper` of GraphQL library and `ro
 
 ```sh
 $ cargo install --force cargo-make
-$ cargo make s3-reset
-$ cargo make db-reset
+$ docker-compose up
+$ cargo make setup
 $ forego start
 ```
