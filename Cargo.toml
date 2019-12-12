@@ -13,6 +13,8 @@ juniper = "*"
 juniper_rocket = "*"
 rocket = "*"
 rocket_cors = "*"
+rusoto_core = "*"
+rusoto_s3 = "*"
 
 [dev-dependencies]
 cargo-husky = { version = "*", default-features = false, features = ["user-hooks"] }

@@ -28,15 +28,22 @@ diesel migration run
 script = ['''
 #!/bin/bash
 
+docker-compose up &
+
+sleep 10
+
 diesel database reset
 
-for filename in $(aws --endpoint-url $AWS_ENDPOINT_URL s3 ls s3://$BUCKET_NAME | tr -s ' ' | cut -d' ' -f4); do
-  presigned_url=$(aws --endpoint-url $AWS_ENDPOINT_URL s3 presign "s3://$BUCKET_NAME/${filename}" --expires-in 604800)
-
-  psql $DATABASE_URL --command "INSERT INTO videos (src) VALUES ('$presigned_url')"
+for filename in $(aws --profile minio --endpoint-url $AWS_ENDPOINT_URL s3 ls s3://$BUCKET_NAME | tr -s ' ' | cut -d' ' -f4); do
+	src="$BUCKET_NAME/$filename"
+	psql $DATABASE_URL --command "INSERT INTO videos (src) VALUES ('$src')"
 done
 
 psql $DATABASE_URL --command "SELECT * FROM videos;"
+
+docker-compose stop
+
+forego start
 ''']
 
 [tasks.s3-reset]
