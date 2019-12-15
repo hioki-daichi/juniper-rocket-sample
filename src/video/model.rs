@@ -1,4 +1,4 @@
-use crate::schema::videos::dsl::videos;
+use crate::schema::videos;
 use crate::video::entity as E;
 use crate::Context;
 use diesel::prelude::*;
@@ -11,7 +11,7 @@ pub struct Video {
 impl Video {
     pub fn all(context: &Context) -> Result<Vec<Video>, String> {
         let conn = context.pool.get().map_err(|e| e.to_string())?;
-        let e_videos: Vec<E::Video> = videos.load(&conn).map_err(|e| e.to_string())?;
+        let e_videos: Vec<E::Video> = videos::dsl::videos.load(&conn).map_err(|e| e.to_string())?;
 
         Ok(e_videos
             .into_iter()
