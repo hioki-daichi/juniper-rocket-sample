@@ -33,6 +33,14 @@ dependencies = [
 	"reset-db"
 ]
 
+[tasks.truncate-videos]
+script = ['''
+#!/bin/bash
+
+psql ${DATABASE_URL} --command "TRUNCATE videos;"
+aws --profile ${PROFILE} --endpoint-url ${AWS_ENDPOINT_URL} s3 rm s3://${BUCKET_NAME} --recursive
+''']
+
 [tasks.reset-db]
 script = ['''
 #!/bin/bash
