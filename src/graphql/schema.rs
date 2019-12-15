@@ -1,3 +1,4 @@
+use crate::util::s3::put_object;
 use crate::video::decorator::VideoDecorator;
 use crate::video::model::Video;
 use crate::Context;
@@ -15,7 +16,7 @@ pub struct Mutation;
 
 graphql_object!(Mutation: Context |&self| {
     field registerVideo(&executor, key: String, data: String) -> FieldResult<VideoDecorator> {
-        // TODO: Send data to s3
+        put_object("videos".to_owned(), key.clone(), base64::decode(&data).unwrap());
         let video = Video::create(executor.context(), key).map_err(|e| FieldError::new(e, Value::null()))?;
         Ok(VideoDecorator::from(&video))
     }
