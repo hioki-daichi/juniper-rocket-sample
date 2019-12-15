@@ -13,6 +13,12 @@ graphql_object!(Query: Context |&self| {
 
 pub struct Mutation;
 
-graphql_object!(Mutation: Context | &self | {});
+graphql_object!(Mutation: Context |&self| {
+    field registerVideo(&executor, key: String, data: String) -> FieldResult<VideoDecorator> {
+        // TODO: Send data to s3
+        let video = Video::create(executor.context(), key).map_err(|e| FieldError::new(e, Value::null()))?;
+        Ok(VideoDecorator::from(&video))
+    }
+});
 
 pub type Schema = RootNode<'static, Query, Mutation>;
